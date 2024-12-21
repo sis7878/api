@@ -33,7 +33,7 @@ def generate_test_data(app, num_records):
 def measure_query_performance(app, num_records):
     """Measure performance of SELECT, INSERT, UPDATE, DELETE queries."""
     print(f"Measuring performance for {num_records} records...")
-    
+
     start_time = time.time()
     generate_test_data(app, num_records)
     insert_time = time.time() - start_time
@@ -41,23 +41,25 @@ def measure_query_performance(app, num_records):
 
     start_time = time.time()
     with app.app_context():
-        pizzas = Pizza.query.all() 
+        pizzas = Pizza.query.filter(Pizza.name.like('%Pizza%')).all() 
     select_time = time.time() - start_time
     print(f"SELECT took {select_time:.5f} seconds")
 
     start_time = time.time()
     with app.app_context():
-        pizza = Pizza.query.first()
-        pizza.price += 1  
-        db.session.commit()
+        pizza = Pizza.query.filter_by(name='Pizza 1').first()  
+        if pizza:
+            pizza.price += 1
+            db.session.commit()
     update_time = time.time() - start_time
     print(f"UPDATE took {update_time:.5f} seconds")
 
     start_time = time.time()
     with app.app_context():
-        pizza_to_delete = Pizza.query.first()
-        db.session.delete(pizza_to_delete)
-        db.session.commit()
+        pizza_to_delete = Pizza.query.filter_by(name='Pizza 1').first()  
+        if pizza_to_delete:
+            db.session.delete(pizza_to_delete)
+            db.session.commit()
     delete_time = time.time() - start_time
     print(f"DELETE took {delete_time:.5f} seconds")
 
@@ -66,8 +68,8 @@ def measure_query_performance(app, num_records):
 if __name__ == "__main__":
     app = create_app()
 
-    record_sizes = [1000, 10000, 100000, 1000000]
-    
+    record_sizes = [1000, 10000, 100000]
+
     for num_records in record_sizes:
         insert_time, select_time, update_time, delete_time = measure_query_performance(app, num_records)
         print(f"\nResults for {num_records} records:")
