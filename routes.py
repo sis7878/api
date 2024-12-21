@@ -3,7 +3,7 @@ from models import db, Pizza
 
 pizza_bp = Blueprint('pizza', __name__)
 
-
+# Create a new pizza
 @pizza_bp.route('/', methods=['POST'])
 def create_pizza():
     data = request.get_json()
@@ -19,21 +19,21 @@ def create_pizza():
     return jsonify({'id': new_pizza.id, 'name': new_pizza.name, 'price': new_pizza.price}), 201
 
 
-
+# Get all pizzas
 @pizza_bp.route('/', methods=['GET'])
 def get_pizzas():
     pizzas = Pizza.query.all()
     return jsonify([{'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price} for pizza in pizzas])
 
 
-
+# Get a single pizza by ID
 @pizza_bp.route('/<int:id>', methods=['GET'])
 def get_pizza(id):
     pizza = Pizza.query.get_or_404(id)
     return jsonify({'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price})
 
 
-
+# Update a pizza
 @pizza_bp.route('/<int:id>', methods=['PUT'])
 def update_pizza(id):
     pizza = Pizza.query.get_or_404(id)
@@ -48,7 +48,7 @@ def update_pizza(id):
     return jsonify({'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price})
 
 
-
+# Delete a pizza
 @pizza_bp.route('/<int:id>', methods=['DELETE'])
 def delete_pizza(id):
     pizza = Pizza.query.get_or_404(id)
