@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify, abort
+from flask_jwt_extended import jwt_required
 from models import db, Pizza
 
 pizza_bp = Blueprint('pizza', __name__)
 
-
 @pizza_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_pizza():
     data = request.get_json()
 
@@ -19,22 +20,22 @@ def create_pizza():
     return jsonify({'id': new_pizza.id, 'name': new_pizza.name, 'price': new_pizza.price}), 201
 
 
-
 @pizza_bp.route('/', methods=['GET'])
+@jwt_required()
 def get_pizzas():
     pizzas = Pizza.query.all()
     return jsonify([{'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price} for pizza in pizzas])
 
 
-
 @pizza_bp.route('/<int:id>', methods=['GET'])
+@jwt_required()
 def get_pizza(id):
     pizza = Pizza.query.get_or_404(id)
     return jsonify({'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price})
 
 
-
 @pizza_bp.route('/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_pizza(id):
     pizza = Pizza.query.get_or_404(id)
 
@@ -47,9 +48,8 @@ def update_pizza(id):
 
     return jsonify({'id': pizza.id, 'name': pizza.name, 'description': pizza.description, 'price': pizza.price})
 
-
-
 @pizza_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_pizza(id):
     pizza = Pizza.query.get_or_404(id)
     db.session.delete(pizza)
